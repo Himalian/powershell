@@ -20,7 +20,7 @@ function bwn
 
 function expo
 { 
-	if ($env:OS == "Windows_NT")
+	if ($env:OS -eq "Windows_NT")
 	{
 		Start-Process .
 	}

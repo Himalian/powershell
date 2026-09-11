@@ -15,3 +15,11 @@ $DefaultParameters = @{
 	$Alias = $_
 	Set-Alias @DefaultParameters @Alias
 }
+
+function btop
+{
+	if ($env:OS -eq "Windows_NT")
+	{
+		sudo btop
+	}
+}

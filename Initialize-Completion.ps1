@@ -1,3 +1,43 @@
-Invoke-Expression (jj util completion power-shell | Out-String )
-Invoke-Expression( chezmoi completion powershell | Out-String )
-Invoke-Expression( gh completion -s powershell | Out-String )
+$TempPath = Join-Path $env:TEMP "pwsh_completions"
+if( -not (Test-Path $TempPath))
+{
+	New-Item -ItemType Directory $TempPath | Out-Null
+}
+
+function Complete
+{
+	param(
+		[string] $command
+	)
+	$CommandName = ($command).Split(" ")[0].ToString()
+	$CompletionScriptPath = (Join-Path $TempPath "$CommandName.ps1")
+	Write-Debug "Script path: $CompletionScriptPath"
+	if ( -not (Test-Path $CompletionScriptPath))
+	{
+		Invoke-Expression $command | Out-File $CompletionScriptPath
+		Write-Debug "Completion Script Path: $CompletionScriptPath"
+		return $CompletionScriptPath
+	} else
+	{
+		# last edit date > 7 => generate a new script
+		if( ((Get-Date).AddDays(-7) -gt (Get-Item $CompletionScriptPath).LastWriteTime) -eq $true )
+		{
+			Invoke-Expression $command | Out-File $CompletionScriptPath
+			Write-Debug "Completion Script Path: $CompletionScriptPath"
+			return $CompletionScriptPath
+		} else
+		{
+			Write-Debug "Completion Script Path: $CompletionScriptPath"
+			return $CompletionScriptPath
+		}
+ }
+}
+
+foreach ($c in @(
+		"chezmoi completion powershell",
+		"gh completion -s powershell"
+	))
+{
+	Write-Debug "Loading completion script for '$c'"
+	. (Complete $c)
+}

@@ -2,6 +2,7 @@ $ProfilePath = Split-Path -Parent $PROFILE
 $modules = @(
 	"Initialize-Zoxide.ps1"
 	"Initialize-Plugins.ps1"
+	".\Initialize-Completion.ps1"
 	"Set-Environment.ps1"
 	"Set-Keymaps.ps1"
 	"Set-Function.ps1"

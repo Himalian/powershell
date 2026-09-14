@@ -1,3 +1,4 @@
+[System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $ProfilePath = Split-Path -Parent $PROFILE
 $modules = @(
 	"Initialize-Zoxide.ps1"

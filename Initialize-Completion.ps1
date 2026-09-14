@@ -14,7 +14,14 @@ function Complete
 	Write-Debug "Script path: $CompletionScriptPath"
 	if ( -not (Test-Path $CompletionScriptPath))
 	{
-		Invoke-Expression $command | Out-File $CompletionScriptPath
+		if ($CommandName -eq "dotnet")
+  {
+			[System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+			(Invoke-Expression $command).Replace('“', "'").Replace('”', "'") | Out-File $CompletionScriptPath
+		} else
+		{
+			Invoke-Expression $command | Out-File $CompletionScriptPath
+		}
 		Write-Debug "Completion Script Path: $CompletionScriptPath"
 		return $CompletionScriptPath
 	} else
@@ -35,7 +42,8 @@ function Complete
 
 foreach ($c in @(
 		"chezmoi completion powershell",
-		"gh completion -s powershell"
+		"gh completion -s powershell",
+		"dotnet completions script pwsh"
 	))
 {
 	Write-Debug "Loading completion script for '$c'"

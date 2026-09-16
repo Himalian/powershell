@@ -43,7 +43,8 @@ function Complete
 foreach ($c in @(
 		"chezmoi completion powershell",
 		"gh completion -s powershell",
-		"dotnet completions script pwsh"
+		"dotnet completions script pwsh",
+		"jj util completion power-shell"
 	))
 {
 	Write-Debug "Loading completion script for '$c'"

@@ -1,6 +1,7 @@
 # Initialize zoxide if command exists
-if (Get-Command zoxide -ErrorAction SilentlyContinue) {
-    Invoke-Expression ((&zoxide init powershell) -join "`n")
+if (Get-Command zoxide -ErrorAction SilentlyContinue)
+{
+	Invoke-Expression (& { (zoxide init --hook pwd powershell | Out-String) })
 }
 
 # Override cd alias with zoxide

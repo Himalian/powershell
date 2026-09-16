@@ -10,6 +10,8 @@ $modules = @(
 	"Set-Alias.ps1"
 )
 
+# Initialize oh-my-posh prompt
+oh-my-posh init pwsh --eval | Invoke-Expression
 # Import profile modules using dot-sourcing
 foreach ($module in $modules)
 {
@@ -22,9 +24,4 @@ foreach ($module in $modules)
 		Write-Warning "Profile script not found: $ModulePath"
 	}
 }
-
-
-
-# Initialize oh-my-posh prompt
-oh-my-posh init pwsh --eval | Invoke-Expression
 

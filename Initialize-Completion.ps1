@@ -4,40 +4,46 @@ if( -not (Test-Path $TempPath))
 	New-Item -ItemType Directory $TempPath | Out-Null
 }
 
+function GenerateCompleteScript
+{
+	# param ([string]$commandName,[string]$outputPath)
+	param ([string]$command,[string]$outputPath)
+	$CommandName = ($command).Split(" ")[0].ToString()
+	# if( Get-Command $CommandName){}
+	if ($CommandName -eq "dotnet")
+	{
+		[System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+		(Invoke-Expression $command).Replace('“', "'").Replace('”', "'") | Out-File $outputPath -Force -Encoding utf8NoBOM
+	} else
+	{
+		Invoke-Expression $command | Out-File $outputPath -Force -Encoding utf8NoBOM
+	}
+	Write-Debug "Completion Script Path: $outputPath"
+}
+
 function Complete
 {
 	param(
 		[string] $command
 	)
-	$CommandName = ($command).Split(" ")[0].ToString()
-	$CompletionScriptPath = (Join-Path $TempPath "$CommandName.ps1")
+	$CompletionScriptPath = (Join-Path $TempPath "$($command.Trim().Split(" ")[0]).ps1")
 	Write-Debug "Script path: $CompletionScriptPath"
+	# not exist => generate
 	if ( -not (Test-Path $CompletionScriptPath))
 	{
-		if ($CommandName -eq "dotnet")
-  {
-			[System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-			(Invoke-Expression $command).Replace('“', "'").Replace('”', "'") | Out-File $CompletionScriptPath
-		} else
-		{
-			Invoke-Expression $command | Out-File $CompletionScriptPath
-		}
-		Write-Debug "Completion Script Path: $CompletionScriptPath"
-		return $CompletionScriptPath
+		GenerateCompleteScript -command $command -outputPath $CompletionScriptPath
 	} else
 	{
-		# last edit date > 7 => generate a new script
+		# exist but last modify date > 7 => generate and override
 		if( ((Get-Date).AddDays(-7) -gt (Get-Item $CompletionScriptPath).LastWriteTime) -eq $true )
 		{
-			Invoke-Expression $command | Out-File $CompletionScriptPath
-			Write-Debug "Completion Script Path: $CompletionScriptPath"
-			return $CompletionScriptPath
+			GenerateCompleteScript -command $command -outputPath $CompletionScriptPath
 		} else
 		{
 			Write-Debug "Completion Script Path: $CompletionScriptPath"
-			return $CompletionScriptPath
 		}
  }
+	return $CompletionScriptPath
 }
 
 foreach ($c in @(
